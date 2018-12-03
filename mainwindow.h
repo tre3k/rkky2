@@ -11,6 +11,10 @@
 
 #include "rkkyfunction.h"
 
+#define T_N 128
+#define T_FROM -0.15
+#define T_TO 0.15
+
 
 namespace Ui {
 class MainWindow;

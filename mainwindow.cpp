@@ -46,7 +46,7 @@ void MainWindow::createMainSpinBoxes(){
     mainSpinBoxes.stiffness->setMinimum(0.0);
     mainSpinBoxes.stiffness->setValue(523.21);
 
-    mainSpinBoxes.k_s->setValue(0.1);
+    mainSpinBoxes.k_s->setValue(0.93);
     mainSpinBoxes.k_s->setSingleStep(0.01);
 
     mainSpinBoxes.lambda->setValue(5.13);
@@ -72,12 +72,33 @@ void MainWindow::on_actionProcess_triggered()
 {
     //buildDispersion();
 
+    double dt = (T_TO-T_FROM)/T_N;
+    QVector <double> vX,vY1,vY2;
+    vX.clear();vY1.clear();vY2.clear();
+
     rkkyFunction *rf = new rkkyFunction();
     rf->setConstants(mainSpinBoxes.stiffness->value(),
                      mainSpinBoxes.k_s->value(),
                      mainSpinBoxes.DeltaH->value(),
                      mainSpinBoxes.lambda->value());
 
+    rkkyFunction::s_functions funcs;
+
+
+
+    for(double var = T_FROM; var < T_TO; var += dt){
+        vX.append(var);
+        funcs = rf->getFunction(var,0,0);
+        vY1.append(funcs.func1);
+        vY2.append(funcs.func2);
+    }
+
+
+    plotDispersion->clearGraphs();
+    plotDispersion->graph(plotDispersion->createGraph("green"))->setData(vX,vY1);
+    plotDispersion->graph(plotDispersion->createGraph("red"))->setData(vX,vY2);
+    plotDispersion->rescaleAxes(true);
+    plotDispersion->replot();
     delete rf;
 }
 

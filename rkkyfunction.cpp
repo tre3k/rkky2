@@ -6,7 +6,7 @@ rkkyFunction::rkkyFunction()
 }
 
 void rkkyFunction::setConstants(double lA0,double lk_s, double lDeltaH, double lambda){
-    this->A0 = lA0;
+    this->A0 = -lA0;
     //lambda *= 1e-10;
     this->k_i = 2.0*M_PI/lambda;
     this->DeltaH = P_g*P_uB*lDeltaH;
