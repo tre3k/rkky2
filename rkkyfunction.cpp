@@ -70,7 +70,7 @@ void rkkyFunction::calculateMap2D(double from_theta, double to_theta, int N){
             root_counts = findRoots(func1,index,N);
             for(int k=0;k<root_counts;k++){
                 geomFactor = t_x*t_x/(t_x*t_x + t_y*t_y + omega[index[k]]*omega[index[k]]);
-                map2D[i][j] += geomFactor/omega[index[k]];
+                //map2D[i][j] += geomFactor/omega[index[k]];
                 if(t_y==0){
                     vRootThetaX1.append(t_x);
                     vRootThetaY1.append(t_y);

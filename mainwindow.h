@@ -12,8 +12,8 @@
 #include "rkkyfunction.h"
 
 #define T_N 256
-#define T_FROM -0.15
-#define T_TO 0.15
+#define T_FROM -0.2
+#define T_TO 0.2
 
 
 namespace Ui {

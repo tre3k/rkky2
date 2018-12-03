@@ -52,6 +52,8 @@ void MainWindow::createMainSpinBoxes(){
 
     mainSpinBoxes.lambda->setValue(5.76);
 
+    mainSpinBoxes.DeltaH->setSingleStep(0.25);
+
 
     ui->mainToolBar->addSeparator();
     ui->mainToolBar->addWidget(new QLabel("Stiffness: "));
@@ -131,8 +133,10 @@ void MainWindow::buildIntencity(rkkyFunction *rf){
     plotIntencity->plot2D->plot2DMap(rf->map2D,T_N,T_N);
 
     plotIntencity->plot2D->ColorMap->data()->setRange(QCPRange(T_FROM,T_TO),QCPRange(T_FROM,T_TO));
-    plotIntencity->plot2D->ColorMap->rescaleDataRange();
-    plotIntencity->plot2D->rescaleAxes();
+    if(!plotIntencity->checkBoxHold->isChecked()){
+        plotIntencity->plot2D->ColorMap->rescaleDataRange(true);
+        plotIntencity->plot2D->rescaleAxes(true);
+    }
     plotIntencity->plot2D->replot();
 
     return;

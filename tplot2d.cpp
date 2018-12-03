@@ -21,9 +21,11 @@ void tPlot2D::plot2DMap(double **data,int size_x,int size_y){
         }
     }
 
+    /*
     this->ColorMap->rescaleDataRange(true);
     this->rescaleAxes();
     this->replot();
+    */
     emit signal_ready();
 }
 
