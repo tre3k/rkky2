@@ -12,10 +12,22 @@ MainWindow::MainWindow(QWidget *parent) :
     plotDispersion = new tPlot();
     layoutTab1->addWidget(plotDispersion);
 
+    QHBoxLayout *layoutTab2 = new QHBoxLayout();
+    plotSphere = new tPlot();
+    layoutTab2->addWidget(plotSphere);
+
+    QHBoxLayout *layoutTab3 = new QHBoxLayout();
+    plotIntencity = new tPlot2DCase();
+    layoutTab3->addWidget(plotIntencity);
+
 
     this->setCentralWidget(ui->tabWidget);
     ui->tab_1->setLayout(layoutTab1);
+    ui->tab_2->setLayout(layoutTab2);
+    ui->tab_3->setLayout(layoutTab3);
 
+
+    createMainSpinBoxes();
 
 }
 
@@ -24,9 +36,34 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::createMainSpinBoxes(){
+    mainSpinBoxes.stiffness = new QDoubleSpinBox();
+    mainSpinBoxes.DeltaH = new QDoubleSpinBox();
+    mainSpinBoxes.k_s = new QDoubleSpinBox();
+
+    mainSpinBoxes.stiffness->setMaximum(99999999.99);
+    mainSpinBoxes.stiffness->setMinimum(0.0);
+    mainSpinBoxes.stiffness->setValue(523.21);
+
+    mainSpinBoxes.k_s->setValue(0.01);
+    mainSpinBoxes.k_s->setSingleStep(0.01);
+
+
+    ui->mainToolBar->addSeparator();
+    ui->mainToolBar->addWidget(new QLabel("Stiffness: "));
+    ui->mainToolBar->addWidget(mainSpinBoxes.stiffness);
+    ui->mainToolBar->addWidget(new QLabel("meVA<sup>4</sup>, k<sub>s</sub>: "));
+    ui->mainToolBar->addWidget(mainSpinBoxes.k_s);
+    ui->mainToolBar->addWidget(new QLabel("nm<sup>-1</sup>, H-H<sub>c2</sub>: "));
+    ui->mainToolBar->addWidget(mainSpinBoxes.DeltaH);
+    ui->mainToolBar->addWidget(new QLabel("T "));
+
+    return;
+}
+
 void MainWindow::on_actionProcess_triggered()
 {
-    buildDispersion();
+    //buildDispersion();
 
 }
 
@@ -59,4 +96,9 @@ void MainWindow::buildDispersion(){
     qDebug () << sizeof(bool);
 
     return;
+}
+
+void MainWindow::on_actionQuit_triggered()
+{
+    QApplication::quit();
 }
