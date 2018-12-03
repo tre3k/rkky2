@@ -37,7 +37,7 @@ SOURCES += \
         tcomplex2d.cpp \
         tcomplex.cpp \
         qcustomplot.cpp \
-    rkkyfunction.cpp
+        rkkyfunction.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -47,7 +47,7 @@ HEADERS += \
         tcomplex2d.h \
         tcomplex.h \
         qcustomplot.h \
-    rkkyfunction.h
+        rkkyfunction.h
 
 FORMS += \
         mainwindow.ui

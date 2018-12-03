@@ -43,6 +43,7 @@ private:
         QDoubleSpinBox *stiffness;
         QDoubleSpinBox *k_s;
         QDoubleSpinBox *DeltaH;
+        QDoubleSpinBox *lambda;
     } mainSpinBoxes;
 
 

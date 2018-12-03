@@ -40,13 +40,16 @@ void MainWindow::createMainSpinBoxes(){
     mainSpinBoxes.stiffness = new QDoubleSpinBox();
     mainSpinBoxes.DeltaH = new QDoubleSpinBox();
     mainSpinBoxes.k_s = new QDoubleSpinBox();
+    mainSpinBoxes.lambda = new QDoubleSpinBox();
 
     mainSpinBoxes.stiffness->setMaximum(99999999.99);
     mainSpinBoxes.stiffness->setMinimum(0.0);
     mainSpinBoxes.stiffness->setValue(523.21);
 
-    mainSpinBoxes.k_s->setValue(0.01);
+    mainSpinBoxes.k_s->setValue(0.1);
     mainSpinBoxes.k_s->setSingleStep(0.01);
+
+    mainSpinBoxes.lambda->setValue(5.13);
 
 
     ui->mainToolBar->addSeparator();
@@ -56,7 +59,9 @@ void MainWindow::createMainSpinBoxes(){
     ui->mainToolBar->addWidget(mainSpinBoxes.k_s);
     ui->mainToolBar->addWidget(new QLabel("nm<sup>-1</sup>, H-H<sub>c2</sub>: "));
     ui->mainToolBar->addWidget(mainSpinBoxes.DeltaH);
-    ui->mainToolBar->addWidget(new QLabel("T "));
+    ui->mainToolBar->addWidget(new QLabel("T, wavelength "));
+    ui->mainToolBar->addWidget(mainSpinBoxes.lambda);
+    ui->mainToolBar->addWidget(new QLabel("A"));
 
 
 
@@ -68,6 +73,10 @@ void MainWindow::on_actionProcess_triggered()
     //buildDispersion();
 
     rkkyFunction *rf = new rkkyFunction();
+    rf->setConstants(mainSpinBoxes.stiffness->value(),
+                     mainSpinBoxes.k_s->value(),
+                     mainSpinBoxes.DeltaH->value(),
+                     mainSpinBoxes.lambda->value());
 
     delete rf;
 }
