@@ -44,12 +44,13 @@ void MainWindow::createMainSpinBoxes(){
 
     mainSpinBoxes.stiffness->setMaximum(99999999.99);
     mainSpinBoxes.stiffness->setMinimum(0.0);
-    mainSpinBoxes.stiffness->setValue(523.21);
+    mainSpinBoxes.stiffness->setValue(10000.21);
 
-    mainSpinBoxes.k_s->setValue(0.93);
-    mainSpinBoxes.k_s->setSingleStep(0.01);
+    mainSpinBoxes.k_s->setValue(0.1);
+    mainSpinBoxes.k_s->setDecimals(3);
+    mainSpinBoxes.k_s->setSingleStep(0.005);
 
-    mainSpinBoxes.lambda->setValue(5.13);
+    mainSpinBoxes.lambda->setValue(5.76);
 
 
     ui->mainToolBar->addSeparator();
@@ -58,8 +59,9 @@ void MainWindow::createMainSpinBoxes(){
     ui->mainToolBar->addWidget(new QLabel("meVA<sup>4</sup>, k<sub>s</sub>: "));
     ui->mainToolBar->addWidget(mainSpinBoxes.k_s);
     ui->mainToolBar->addWidget(new QLabel("nm<sup>-1</sup>, H-H<sub>c2</sub>: "));
+    //ui->mainToolBar->addWidget(new QLabel("rad, H-H<sub>c2</sub>: "));
     ui->mainToolBar->addWidget(mainSpinBoxes.DeltaH);
-    ui->mainToolBar->addWidget(new QLabel("T, wavelength "));
+    ui->mainToolBar->addWidget(new QLabel("T, wavelenght "));
     ui->mainToolBar->addWidget(mainSpinBoxes.lambda);
     ui->mainToolBar->addWidget(new QLabel("A"));
 
@@ -70,11 +72,6 @@ void MainWindow::createMainSpinBoxes(){
 
 void MainWindow::on_actionProcess_triggered()
 {
-    //buildDispersion();
-
-    double dt = (T_TO-T_FROM)/T_N;
-    QVector <double> vX,vY1,vY2;
-    vX.clear();vY1.clear();vY2.clear();
 
     rkkyFunction *rf = new rkkyFunction();
     rf->setConstants(mainSpinBoxes.stiffness->value(),
@@ -82,53 +79,61 @@ void MainWindow::on_actionProcess_triggered()
                      mainSpinBoxes.DeltaH->value(),
                      mainSpinBoxes.lambda->value());
 
+    buildDispersion(rf);
+    buildIntencity(rf);
+    buildSphere(rf);
+
+
+    delete rf;
+}
+
+void MainWindow::buildSphere(rkkyFunction *rf){
+
+    plotSphere->xAxis->setLabel("theta_x");
+    plotSphere->yAxis->setLabel("omega");
+    plotSphere->clearGraphs();
+    plotSphere->graph(plotSphere->createGraph("green"))->setData(rf->vRootThetaX1,rf->vRootOmega1);
+    plotSphere->graph(plotSphere->createGraph("red"))->setData(rf->vRootThetaX2,rf->vRootOmega2);
+    //plotSphere->rescaleAxes(true);
+    plotSphere->xAxis->setRange(QCPRange(T_FROM,T_TO));
+    plotSphere->yAxis->setRange(QCPRange(T_FROM,T_TO));
+    plotSphere->replot();
+
+    return;
+}
+
+void MainWindow::buildDispersion(rkkyFunction *rf){
+    double dt = (T_TO-T_FROM)/T_N;
+    QVector <double> vX,vY1,vY2;
+    vX.clear();vY1.clear();vY2.clear();
+
     rkkyFunction::s_functions funcs;
-
-
 
     for(double var = T_FROM; var < T_TO; var += dt){
         vX.append(var);
-        funcs = rf->getFunction(var,0,0);
+        funcs = rf->getFunction(0.0,0.0,var);
         vY1.append(funcs.func1);
         vY2.append(funcs.func2);
     }
 
-
+    plotDispersion->xAxis->setLabel("omega");
+    plotDispersion->yAxis->setLabel("function");
     plotDispersion->clearGraphs();
     plotDispersion->graph(plotDispersion->createGraph("green"))->setData(vX,vY1);
     plotDispersion->graph(plotDispersion->createGraph("red"))->setData(vX,vY2);
     plotDispersion->rescaleAxes(true);
     plotDispersion->replot();
-    delete rf;
+    return;
 }
 
-void MainWindow::buildDispersion(){
-    QVector <double> vX,vY;
+void MainWindow::buildIntencity(rkkyFunction *rf){
+    rf->calculateMap2D(T_FROM,T_TO,T_N);
+    plotIntencity->plot2D->plot2DMap(rf->map2D,T_N,T_N);
 
-    vX.clear();vY.clear();
-    int N = 250;
-    double *out; double *in = new double [N];
-
-    for(int i=0;i<N;i++){
-        in[i] = (double)(i-N/2)/10.0;
-        vX.append(in[i]);
-    }
-
-    FunctionCuda *funcuda = new FunctionCuda();
-    out = funcuda->test(in,N);
-
-    for(int i=0;i<N;i++){
-        vY.append(out[i]);
-        //vY.append(in[i]*in[i]);
-    }
-
-
-    plotDispersion->clearGraphs();
-    plotDispersion->graph(plotDispersion->createGraph())->setData(vX,vY);
-    plotDispersion->rescaleAxes(true);
-    plotDispersion->replot();
-
-    qDebug () << sizeof(bool);
+    plotIntencity->plot2D->ColorMap->data()->setRange(QCPRange(T_FROM,T_TO),QCPRange(T_FROM,T_TO));
+    plotIntencity->plot2D->ColorMap->rescaleDataRange();
+    plotIntencity->plot2D->rescaleAxes();
+    plotIntencity->plot2D->replot();
 
     return;
 }

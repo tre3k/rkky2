@@ -13,6 +13,14 @@
 #define P_g            -2.00231930436153   // g-factor
 #define P_e            1.60217662e-19      // e Kulon
 
+/*
+#define P_h            1.0     // Joul*s  plank const
+#define P_mn           1.0     // kg  neutron mass
+#define P_uB           1.0      // Joul/T  Bor magneton
+#define P_g            1.0   // g-factor
+#define P_e            1.0      // e Kulon
+*/
+
 class FunctionCuda{
  public:
   double A;                 // Stiffness RKKY

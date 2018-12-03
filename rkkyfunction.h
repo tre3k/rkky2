@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <QDebug>
+#include <QVector>
 
 #include "function_cuda.h"
 
@@ -18,11 +19,19 @@ public:
     };
 
     s_functions getFunction(double t_x,double t_y,double o);
+    void calculateMap2D(double from_theta, double to_theta, int N);
 
     double **map2D;
+    QVector<double> vRootThetaX1;
+    QVector<double> vRootThetaY1;
+    QVector<double> vRootOmega1;
+    QVector<double> vRootThetaX2;
+    QVector<double> vRootThetaY2;
+    QVector<double> vRootOmega2;
 
 private:
     double k_i,k_s,A0,DeltaH,E_i;
+    int findRoots(double *func,int *index,int N);
 
 };
 
