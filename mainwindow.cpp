@@ -58,6 +58,8 @@ void MainWindow::createMainSpinBoxes(){
     ui->mainToolBar->addWidget(mainSpinBoxes.DeltaH);
     ui->mainToolBar->addWidget(new QLabel("T "));
 
+
+
     return;
 }
 
@@ -65,6 +67,9 @@ void MainWindow::on_actionProcess_triggered()
 {
     //buildDispersion();
 
+    rkkyFunction *rf = new rkkyFunction();
+
+    delete rf;
 }
 
 void MainWindow::buildDispersion(){

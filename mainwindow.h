@@ -9,6 +9,8 @@
 #include "tplot2dcase.h"
 #include "function_cuda.h"
 
+#include "rkkyfunction.h"
+
 
 namespace Ui {
 class MainWindow;
