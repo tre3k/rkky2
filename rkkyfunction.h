@@ -19,7 +19,7 @@ public:
     };
 
     s_functions getFunction(double t_x,double t_y,double o);
-    void calculateMap2D(double from_theta, double to_theta, int N);
+    void calculateMap2D(double from_theta, double to_theta, int N, double angleField);
 
     double **map2D;
     QVector<double> vRootThetaX1;
@@ -31,7 +31,7 @@ public:
 
 private:
     double k_i,k_s,A0,DeltaH,E_i;
-    int findRoots(double *func,int *index,int N);
+    int findRoots(double *func,int *index,int N, bool point);
 
 };
 

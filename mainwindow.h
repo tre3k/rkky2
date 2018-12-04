@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QHBoxLayout>
 #include <QVector>
+#include <QDebug>
 
 #include "tplot.h"
 #include "tplot2dcase.h"
@@ -11,10 +12,9 @@
 
 #include "rkkyfunction.h"
 
-#define T_N 256
-#define T_FROM -0.2
-#define T_TO 0.2
-
+#define T_N 257
+#define T_FROM -0.3
+#define T_TO 0.3
 
 namespace Ui {
 class MainWindow;
@@ -52,6 +52,10 @@ private:
         QDoubleSpinBox *lambda;
     } mainSpinBoxes;
 
+    struct s_SpinField{
+        QDial *dialField;
+        QDoubleSpinBox *spinBoxField;
+    } spinFiled;
 
 };
 

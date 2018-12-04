@@ -76,6 +76,9 @@
    <property name="text">
     <string>&amp;Process</string>
    </property>
+   <property name="shortcut">
+    <string>Return</string>
+   </property>
   </action>
   <action name="actionQuit">
    <property name="text">

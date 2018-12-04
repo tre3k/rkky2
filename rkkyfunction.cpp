@@ -6,7 +6,7 @@ rkkyFunction::rkkyFunction()
 }
 
 void rkkyFunction::setConstants(double lA0,double lk_s, double lDeltaH, double lambda){
-    this->A0 = -lA0;
+    this->A0 = lA0;
     this->k_i = 2.0*M_PI/lambda;
     this->DeltaH = P_g*P_uB*lDeltaH;
     this->E_i = P_h*P_h*this->k_i*this->k_i/2/P_mn/1e-20;
@@ -27,7 +27,7 @@ void rkkyFunction::setConstants(double lA0,double lk_s, double lDeltaH, double l
     return;
 }
 
-void rkkyFunction::calculateMap2D(double from_theta, double to_theta, int N){
+void rkkyFunction::calculateMap2D(double from_theta, double to_theta, int N,double angleFiled){
     map2D = new double * [N];
     for(int i=0;i<N;i++) map2D[i] = new double [N];
     for(int i=0;i<N;i++){
@@ -66,22 +66,43 @@ void rkkyFunction::calculateMap2D(double from_theta, double to_theta, int N){
                 func1[k] = funcs.func1;
                 func2[k] = funcs.func2;
             }
+
             // find roots
-            root_counts = findRoots(func1,index,N);
+            root_counts = findRoots(func1,index,N,true);
             for(int k=0;k<root_counts;k++){
-                geomFactor = t_x*t_x/(t_x*t_x + t_y*t_y + omega[index[k]]*omega[index[k]]);
+                geomFactor = (k_i*t_x*sin(angleFiled)+k_i*omega[index[k]]*cos(angleFiled))*
+                             (k_i*t_x*sin(angleFiled)+k_i*omega[index[k]]*cos(angleFiled))/
+                             (t_x*t_x + t_y*t_y + omega[index[k]]*omega[index[k]]);
+
+                //map2D[i][j] += geomFactor/omega[index[k]]/omega[index[k]];
                 //map2D[i][j] += geomFactor/omega[index[k]];
-                if(t_y==0){
+                //map2D[i][j]+=geomFactor;
+
+                map2D[i][j] += geomFactor/omega[index[k]] + 1/omega[index[k]];
+                map2D[i][j] += 1+geomFactor/omega[index[k]];
+
+                if(t_y <= dt && t_y > -dt){
                     vRootThetaX1.append(t_x);
                     vRootThetaY1.append(t_y);
                     vRootOmega1.append(omega[index[k]]);
                 }
             }
-            root_counts = findRoots(func2,index,N);
+
+
+            root_counts = findRoots(func2,index,N,false);
             for(int k=0;k<root_counts;k++){
-                geomFactor = t_x*t_x/(t_x*t_x + t_y*t_y + omega[index[k]]*omega[index[k]]);
-                map2D[i][j] += geomFactor/omega[index[k]];
-                if(t_y==0){
+                geomFactor = (k_i*t_x*sin(angleFiled)+k_i*omega[index[k]]*cos(angleFiled))*
+                             (k_i*t_x*sin(angleFiled)+k_i*omega[index[k]]*cos(angleFiled))/
+                             (t_x*t_x + t_y*t_y + omega[index[k]]*omega[index[k]]);
+
+                //map2D[i][j] += geomFactor/omega[index[k]]/omega[index[k]];
+                //map2D[i][j] += 1/omega[index[k]]+geomFactor/omega[index[k]];
+                //map2D[i][j] += geomFactor/omega[index[k]];
+                //map2D[i][j] += geomFactor/omega[index[k]];
+
+                map2D[i][j] += geomFactor/omega[index[k]] + 1/omega[index[k]];
+
+                if(t_y <= dt && t_y > -dt){
                     vRootThetaX2.append(t_x);
                     vRootThetaY2.append(t_y);
                     vRootOmega2.append(omega[index[k]]);
@@ -91,48 +112,20 @@ void rkkyFunction::calculateMap2D(double from_theta, double to_theta, int N){
         }
     }
 
-    /*
-    t_x = 0.0; t_y = 0.00;
-
-    for(int k=0;k<N;k++){
-        o = from_theta + dt*k;
-        omega[k] = o;
-        funcs = getFunction(t_x,t_y,o);
-        func1[k] = funcs.func1;
-        func2[k] = funcs.func2;
-    }
-    // find roots
-    root_counts = findRoots(func1,index,N);
-    for(int k=0;k<root_counts;k++){
-        qDebug() << t_x << " " << t_y << " " << omega[index[k]];
-    }
-    qDebug () << root_counts;
-    */
-
-    /*
-    for(int i=0;i<N;i++){
-        for(int j=0;j<N;j++) map2D[i][j] = i*i+j*j;
-    }
-    */
+    delete [] func1; delete [] func2; delete [] omega; delete [] index;
     return;
 }
 
-int rkkyFunction::findRoots(double *func,int *index,int N){
+int rkkyFunction::findRoots(double *func,int *index,int N,bool point){
     int count_roots = 0;
-    /*
-    double eps = 0.025;
-    //double eps = 0.005;
-    for(int i=0;i<N;i++){
-        if(func[i] <= eps && func[i] >= -eps){
-            index[count_roots] = i;
-            count_roots++;
-        }
-    }
-    */
 
     for(int i=1;i<N;i++){
         if((func[i-1]>=0 && func[i] <= 0)|| (func[i-1]<=0 && func[i] >= 0)){
-            index[count_roots] = i;
+            if(point){
+                index[count_roots] = i;
+            }else{
+                index[count_roots] = i-1;
+            }
             count_roots++;
         }
     }
@@ -147,15 +140,22 @@ rkkyFunction::s_functions rkkyFunction::getFunction(double t_x,double t_y,double
     double t2_y = t_y*t_y;
     double k2_i = k_i*k_i;
 
+
     double A = k2_i*t2_x;
     double B = k2_i*t2_y;
     double C = k2_i*o2;
     double D = k_s*k_s;
-    //double D = k_s*k_s*k_i*k_i;
+    double dispersion;
+
+    // FM:
+    //dispersion = A0*k2_i*(t2_x+t2_y+o2);
+
+    // RKKY
+    dispersion = A0*(A+B+C-D)*(A+B+C-D);
 
 
-    retval.func1 = 2*E_i*o - A0*(A+B+C-D)*(A+B+C-D) - DeltaH;
-    retval.func2 = 2*E_i*o + A0*(A+B+C-D)*(A+B+C-D) + DeltaH;
+    retval.func1 = 2*E_i*o - dispersion + DeltaH;
+    retval.func2 = 2*E_i*o + dispersion - DeltaH;
 
     return retval;
 }
