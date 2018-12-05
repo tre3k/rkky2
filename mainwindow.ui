@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tab_1">
      <attribute name="title">
@@ -39,6 +39,11 @@
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
       <string>Intencity</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tab_4">
+     <attribute name="title">
+      <string>Cross section</string>
      </attribute>
     </widget>
    </widget>

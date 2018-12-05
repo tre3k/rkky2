@@ -11,6 +11,8 @@ class rkkyFunction
 {
 public:
     rkkyFunction();
+
+    double k_i,k_s,A0,DeltaH,E_i;
     void setConstants(double lA0,double lk_s, double lDeltaH,double lambda);
 
     struct s_functions{
@@ -30,7 +32,7 @@ public:
     QVector<double> vRootOmega2;
 
 private:
-    double k_i,k_s,A0,DeltaH,E_i;
+
     int findRoots(double *func,int *index,int N, bool point);
 
 };

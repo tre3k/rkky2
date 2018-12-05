@@ -74,10 +74,6 @@ void rkkyFunction::calculateMap2D(double from_theta, double to_theta, int N,doub
                              (k_i*t_x*sin(angleFiled)+k_i*omega[index[k]]*cos(angleFiled))/
                              (t_x*t_x + t_y*t_y + omega[index[k]]*omega[index[k]]);
 
-                //map2D[i][j] += geomFactor/omega[index[k]]/omega[index[k]];
-                //map2D[i][j] += geomFactor/omega[index[k]];
-                //map2D[i][j]+=geomFactor;
-
                 map2D[i][j] += geomFactor/omega[index[k]] + 1/omega[index[k]];
                 map2D[i][j] += 1+geomFactor/omega[index[k]];
 
@@ -94,11 +90,6 @@ void rkkyFunction::calculateMap2D(double from_theta, double to_theta, int N,doub
                 geomFactor = (k_i*t_x*sin(angleFiled)+k_i*omega[index[k]]*cos(angleFiled))*
                              (k_i*t_x*sin(angleFiled)+k_i*omega[index[k]]*cos(angleFiled))/
                              (t_x*t_x + t_y*t_y + omega[index[k]]*omega[index[k]]);
-
-                //map2D[i][j] += geomFactor/omega[index[k]]/omega[index[k]];
-                //map2D[i][j] += 1/omega[index[k]]+geomFactor/omega[index[k]];
-                //map2D[i][j] += geomFactor/omega[index[k]];
-                //map2D[i][j] += geomFactor/omega[index[k]];
 
                 map2D[i][j] += geomFactor/omega[index[k]] + 1/omega[index[k]];
 
