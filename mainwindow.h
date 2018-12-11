@@ -12,7 +12,7 @@
 
 #include "rkkyfunction.h"
 
-#define T_N 256
+#define T_N 257
 #define T_FROM -0.3
 #define T_TO 0.3
 

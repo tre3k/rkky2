@@ -118,25 +118,70 @@ void MainWindow::buildSphere(rkkyFunction *rf){
     QVector<double> vY21,vY22,vY23,vY24;
 
     double y11,y12,y13,y14,y21,y22,y23,y24;
+    double t_s;
 
     vX.clear();
     vY11.clear(); vY12.clear(); vY13.clear(); vY14.clear();
     vY21.clear(); vY22.clear(); vY23.clear(); vY24.clear();
 
     double dt = (T_TO-T_FROM)/T_N;
-    for(double var = T_FROM; var < T_TO; var += dt){
+    for(double var = T_FROM; var < T_TO; var += dt/5){
         vX.append(var);
-        //y11 = sqrt()
+        t_s = rf->k_s/rf->k_i;
+        y11 = sqrt(t_s*t_s + sqrt((2*rf->E_i*var+rf->DeltaH)/rf->A0/rf->k_i/rf->k_i/rf->k_i/rf->k_i)-var*var);
+        vY11.append(y11);
+        y12 = -sqrt(t_s*t_s + sqrt((2*rf->E_i*var+rf->DeltaH)/rf->A0/rf->k_i/rf->k_i/rf->k_i/rf->k_i)-var*var);
+        vY12.append(y12);
+        y13 = sqrt(t_s*t_s - sqrt((2*rf->E_i*var+rf->DeltaH)/rf->A0/rf->k_i/rf->k_i/rf->k_i/rf->k_i)-var*var);
+        vY13.append(y13);
+        y14 = -sqrt(t_s*t_s - sqrt((2*rf->E_i*var+rf->DeltaH)/rf->A0/rf->k_i/rf->k_i/rf->k_i/rf->k_i)-var*var);
+        vY14.append(y14);
+
+        y21 = sqrt(t_s*t_s + sqrt(-(2*rf->E_i*var-rf->DeltaH)/rf->A0/rf->k_i/rf->k_i/rf->k_i/rf->k_i)-var*var);
+        vY21.append(y21);
+        y22 = -sqrt(t_s*t_s + sqrt(-(2*rf->E_i*var-rf->DeltaH)/rf->A0/rf->k_i/rf->k_i/rf->k_i/rf->k_i)-var*var);
+        vY22.append(y22);
+        y23 = sqrt(t_s*t_s - sqrt(-(2*rf->E_i*var-rf->DeltaH)/rf->A0/rf->k_i/rf->k_i/rf->k_i/rf->k_i)-var*var);
+        vY23.append(y23);
+        y24 = -sqrt(t_s*t_s - sqrt(-(2*rf->E_i*var-rf->DeltaH)/rf->A0/rf->k_i/rf->k_i/rf->k_i/rf->k_i)-var*var);
+        vY24.append(y24);
     }
 
-    plotSphere->xAxis->setLabel("theta_x");
-    plotSphere->yAxis->setLabel("omega");
+    plotSphere->xAxis->setLabel("omega");
+    plotSphere->yAxis->setLabel("theta_x");
     plotSphere->clearGraphs();
+    plotSphere->graph(plotSphere->createGraph("green"))->setData(rf->vRootOmega1, rf->vRootThetaX1);
+    plotSphere->graph(plotSphere->createGraph("red"))->setData(rf->vRootOmega2, rf->vRootThetaX2);
+    /*
     plotSphere->graph(plotSphere->createGraph("green"))->setData(rf->vRootThetaX1,rf->vRootOmega1);
     plotSphere->graph(plotSphere->createGraph("red"))->setData(rf->vRootThetaX2,rf->vRootOmega2);
+    */
 
-    //plotSphere->graph(plotSphere->createGraph("green"))->setData(vX,vY11);
-    //plotSphere->graph(plotSphere->createGraph("red"))->setData(vX,vY21);
+    plotSphere->graph(plotSphere->createGraph("green"))->setData(vX,vY11);
+    plotSphere->graph(plotSphere->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"green","green",5));
+    plotSphere->graph(plotSphere->graphCount()-1)->setPen(QPen(QColor("green"),1.5,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+    plotSphere->graph(plotSphere->createGraph("green"))->setData(vX,vY12);
+    plotSphere->graph(plotSphere->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"green","green",5));
+    plotSphere->graph(plotSphere->graphCount()-1)->setPen(QPen(QColor("green"),1.5,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+    plotSphere->graph(plotSphere->createGraph("green"))->setData(vX,vY13);
+    plotSphere->graph(plotSphere->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"green","green",5));
+    plotSphere->graph(plotSphere->graphCount()-1)->setPen(QPen(QColor("green"),1.5,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+    plotSphere->graph(plotSphere->createGraph("green"))->setData(vX,vY14);
+    plotSphere->graph(plotSphere->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"green","green",5));
+    plotSphere->graph(plotSphere->graphCount()-1)->setPen(QPen(QColor("green"),1.5,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+
+    plotSphere->graph(plotSphere->createGraph("red"))->setData(vX,vY21);
+    plotSphere->graph(plotSphere->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"red","red",5));
+    plotSphere->graph(plotSphere->graphCount()-1)->setPen(QPen(QColor("red"),1.5,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+    plotSphere->graph(plotSphere->createGraph("red"))->setData(vX,vY22);
+    plotSphere->graph(plotSphere->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"red","red",5));
+    plotSphere->graph(plotSphere->graphCount()-1)->setPen(QPen(QColor("red"),1.5,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+    plotSphere->graph(plotSphere->createGraph("red"))->setData(vX,vY23);
+    plotSphere->graph(plotSphere->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"red","red",5));
+    plotSphere->graph(plotSphere->graphCount()-1)->setPen(QPen(QColor("red"),1.5,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+    plotSphere->graph(plotSphere->createGraph("red"))->setData(vX,vY24);
+    plotSphere->graph(plotSphere->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"red","red",5));
+    plotSphere->graph(plotSphere->graphCount()-1)->setPen(QPen(QColor("red"),1.5,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
 
 
     //plotSphere->rescaleAxes(true);
