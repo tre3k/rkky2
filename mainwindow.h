@@ -65,6 +65,12 @@ private:
         QDoubleSpinBox *spinBoxField;
     } spinFiled;
 
+    struct s_DispersionWidget{
+        QWidget *widget;
+        QFormLayout *layout;
+        QComboBox *comboBox;
+    } dispersionWidget;
+
 };
 
 #endif // MAINWINDOW_H

@@ -7,20 +7,35 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
+    /* Tab 1 Dispersion */
     QHBoxLayout *layoutTab1 = new QHBoxLayout();
     plotDispersion = new tPlot();
     layoutTab1->addWidget(plotDispersion);
 
+    dispersionWidget.widget = new QWidget;
+    dispersionWidget.layout = new QFormLayout();
+    dispersionWidget.comboBox = new QComboBox();
+    dispersionWidget.widget->setLayout(dispersionWidget.layout);
+    dispersionWidget.widget->setMaximumSize(200,99999);
+    dispersionWidget.layout->addRow("axies: ",dispersionWidget.comboBox);
+    dispersionWidget.comboBox->addItem("ꞷ");
+    dispersionWidget.comboBox->addItem("θx");
+    dispersionWidget.comboBox->addItem("θy");
+    layoutTab1->addWidget(dispersionWidget.widget);
+
+
+    /* Tab 2 Sphere */
     QHBoxLayout *layoutTab2 = new QHBoxLayout();
     plotSphere = new tPlot();
     layoutTab2->addWidget(plotSphere);
 
+    /* Tab 3 Intencity */
     QHBoxLayout *layoutTab3 = new QHBoxLayout();
     plotIntencity = new tPlot2DCase();
     layoutTab3->addWidget(plotIntencity);
     plotIntencity->setMinimumSize(QSize(10,10));
 
+     /* Tab 4 Cross-section */
     QHBoxLayout *layoutTab4 = new QHBoxLayout();
     plotCrossSection = new tPlot();
     layoutTab4->addWidget(plotCrossSection);
@@ -50,10 +65,10 @@ void MainWindow::createMainSpinBoxes(){
 
     mainSpinBoxes.stiffness->setMaximum(99999999.99);
     mainSpinBoxes.stiffness->setMinimum(0.0);
-    mainSpinBoxes.stiffness->setValue(8000.21);
+    mainSpinBoxes.stiffness->setValue(1000.21);
     mainSpinBoxes.stiffness->setSingleStep(100);
 
-    mainSpinBoxes.k_s->setValue(0.1);
+    mainSpinBoxes.k_s->setValue(0.2);
     mainSpinBoxes.k_s->setDecimals(3);
     mainSpinBoxes.k_s->setSingleStep(0.005);
 
@@ -202,16 +217,47 @@ void MainWindow::buildDispersion(rkkyFunction *rf){
 
     for(double var = T_FROM; var < T_TO; var += dt){
         vX.append(var);
-        funcs = rf->getFunction(0.0,0.0,var);
+        switch(dispersionWidget.comboBox->currentIndex()){
+        // omega
+        case 0:
+            funcs = rf->getFunction(0.0,0.0,var);
+            break;
+        // theta_x
+        case 1:
+            funcs = rf->getFunction(var,0.0,0.0);
+            break;
+        // theta_y
+        case 2:
+            funcs = rf->getFunction(0.0,var,0.0);
+            break;
+        }
+
         vY1.append(funcs.func1);
         vY2.append(funcs.func2);
     }
 
-    plotDispersion->xAxis->setLabel("omega");
+    switch(dispersionWidget.comboBox->currentIndex()){
+    // omega
+    case 0:
+        plotDispersion->xAxis->setLabel("ꞷ");
+        break;
+    // theta_x
+    case 1:
+        plotDispersion->xAxis->setLabel("θx");
+        break;
+    // theta_y
+    case 2:
+        plotDispersion->xAxis->setLabel("θy");
+        break;
+    }
     plotDispersion->yAxis->setLabel("function");
     plotDispersion->clearGraphs();
     plotDispersion->graph(plotDispersion->createGraph("green"))->setData(vX,vY1);
+    plotDispersion->graph(plotDispersion->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"green","green",5));
+    plotDispersion->graph(plotDispersion->graphCount()-1)->setPen(QPen(QColor("green"),3,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
     plotDispersion->graph(plotDispersion->createGraph("red"))->setData(vX,vY2);
+    plotDispersion->graph(plotDispersion->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"red","red",5));
+    plotDispersion->graph(plotDispersion->graphCount()-1)->setPen(QPen(QColor("red"),3,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
     plotDispersion->rescaleAxes(true);
     plotDispersion->replot();
     return;
