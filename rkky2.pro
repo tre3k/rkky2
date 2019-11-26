@@ -24,7 +24,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 INCLUDEPATH += function_cuda_lib/
-LIBS += -L"../rkky2/function_cuda_lib/" -lfunction_cuda
+#LIBS += -L"../rkky2/function_cuda_lib/" -lfunction_cuda
 
 CONFIG += c++11
 
