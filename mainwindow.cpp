@@ -40,12 +40,29 @@ MainWindow::MainWindow(QWidget *parent) :
     plotCrossSection = new tPlot();
     layoutTab4->addWidget(plotCrossSection);
 
+    /* Tab 5 I(H) */
+    QHBoxLayout *layoutTab5 = new QHBoxLayout();
+    plotIatH = new tPlot();
+    layoutTab5->addWidget(plotIatH);
+    plotIatH->xAxis->setLabel("deltaH, T");
+    plotIatH->yAxis->setLabel("I");
+    //plotIatH->yAxis->setScaleType(QCPAxis::stLogarithmic);
+
+    /* Tab 6 Ks(H) */
+    QHBoxLayout *layoutTab6 = new QHBoxLayout();
+    plotKatH = new tPlot();
+    layoutTab6->addWidget(plotKatH);
+    plotKatH->xAxis->setLabel("deltaH, T");
+    plotKatH->yAxis->setLabel("theta_S");
+
 
     this->setCentralWidget(ui->tabWidget);
     ui->tab_1->setLayout(layoutTab1);
     ui->tab_2->setLayout(layoutTab2);
     ui->tab_3->setLayout(layoutTab3);
     ui->tab_4->setLayout(layoutTab4);
+    ui->tab_5->setLayout(layoutTab5);
+    ui->tab_6->setLayout(layoutTab6);
 
 
     createMainSpinBoxes();
@@ -89,7 +106,6 @@ void MainWindow::createMainSpinBoxes(){
     ui->mainToolBar->addWidget(mainSpinBoxes.lambda);
     ui->mainToolBar->addWidget(new QLabel("Å"));
 
-
     spinFiled.dialField = new QDial();
     //spinFiled.dialField->setH1
     spinFiled.dialField->setMaximum(360);
@@ -104,6 +120,9 @@ void MainWindow::createMainSpinBoxes(){
     ui->mainToolBar->addSeparator();
     ui->mainToolBar->addWidget(new QLabel("field angle x-z: "));
     ui->mainToolBar->addWidget(spinFiled.spinBoxField);
+
+    ui->mainToolBar->addSeparator();
+    ui->mainToolBar->addAction(ui->action_at_H);
 
     return;
 }
@@ -121,7 +140,6 @@ void MainWindow::on_actionProcess_triggered()
     buildIntencity(rf);
     buildSphere(rf);
     buildCrossSection(rf);
-
 
     delete rf;
 }
@@ -255,9 +273,11 @@ void MainWindow::buildDispersion(rkkyFunction *rf){
     plotDispersion->graph(plotDispersion->createGraph("green"))->setData(vX,vY1);
     plotDispersion->graph(plotDispersion->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"green","green",5));
     plotDispersion->graph(plotDispersion->graphCount()-1)->setPen(QPen(QColor("green"),3,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+    plotDispersion->graph(plotDispersion->graphCount()-1)->selectionDecorator()->setPen(QPen(QColor("green"),4,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
     plotDispersion->graph(plotDispersion->createGraph("red"))->setData(vX,vY2);
     plotDispersion->graph(plotDispersion->graphCount()-1)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssNone,"red","red",5));
     plotDispersion->graph(plotDispersion->graphCount()-1)->setPen(QPen(QColor("red"),3,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
+    plotDispersion->graph(plotDispersion->graphCount()-1)->selectionDecorator()->setPen(QPen(QColor("red"),4,Qt::SolidLine,Qt::SquareCap,Qt::BevelJoin));
     plotDispersion->rescaleAxes(true);
     plotDispersion->replot();
     return;
@@ -278,7 +298,7 @@ void MainWindow::buildIntencity(rkkyFunction *rf){
 }
 
 void MainWindow::buildCrossSection(rkkyFunction *rf){
-    QVector<double> vRy,vLy,vRx,vLx,vAx,vAy;
+
     vRy.clear(); vLy.clear(); vRx.clear(); vLx.clear(); vAx.clear(); vAy.clear();
 
 
@@ -301,6 +321,13 @@ void MainWindow::buildCrossSection(rkkyFunction *rf){
     plotCrossSection->graph(plotCrossSection->createGraph("black"))->setData(vAx,vAy);  // Amount
     plotCrossSection->rescaleAxes(true);
     plotCrossSection->replot();
+
+    /*
+    qDebug () << "\n *** Cross-section *** \n";
+    for(int i=0;i<vAx.count();i++){
+        qDebug () << vAx.at(i) << "\t" << vAy.at(i);
+    }
+    */
 
 }
 
@@ -356,3 +383,71 @@ void MainWindow::on_actionQuit_triggered()
 {
     QApplication::quit();
 }
+
+void MainWindow::on_action_at_H_triggered()
+{
+    double Hmin = 0.0;
+    double Hmax = 10;
+
+    double dH = 0.25;
+
+
+    /*
+    double Hmin = 300;
+    double Hmax = 10000;
+
+    double dH = 100;
+    */
+
+    QVector<double> vH,vKatH,vIatH,vThetaCH;
+    vH.clear(); vKatH.clear(); vIatH.clear(), vThetaCH.clear();
+
+    retKI KandH;
+
+    for(double H=Hmin;H<Hmax;H+=dH){
+        mainSpinBoxes.DeltaH->setValue(H);
+        //mainSpinBoxes.stiffness->setValue(H);
+        on_actionProcess_triggered();
+        vH.append(H);
+        KandH = findMax(&vAx,&vAy);
+        vKatH.append(KandH.Ks);
+        vIatH.append(KandH.I);
+        vThetaCH.append(KandH.Theta_C);
+    }
+
+    plotIatH->clearGraphs();
+    plotIatH->graph(plotIatH->createGraph("green"))->setData(vH,vIatH);
+    plotIatH->rescaleAxes(true);
+    plotIatH->replot();
+    plotKatH->clearGraphs();
+    plotKatH->graph(plotKatH->createGraph("green"))->setData(vH,vKatH);
+    plotKatH->graph(plotKatH->createGraph("red"))->setData(vH,vThetaCH);
+    plotKatH->rescaleAxes(true);
+    plotKatH->replot();
+}
+
+MainWindow::retKI MainWindow::findMax(QVector<double> *vx, QVector<double> *vy){
+    retKI retval;
+
+    retval.I = vy->at(0);
+    retval.Ks = vx->at(0);
+    retval.Theta_C = retval.I;
+
+    for(int i=0;i<vy->size();i++){
+        if(retval.I < vy->at(i)){
+            retval.I = vy->at(i);
+            retval.Ks = vx->at(i);
+        }
+    }
+
+    for(int i=vy->size();i>0;i--){
+        if(vy->at(i) > 0.0){
+            retval.Theta_C = vx->at(i);
+            break;
+        }
+    }
+
+    return retval;
+}
+
+

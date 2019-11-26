@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="tab_1">
      <attribute name="title">
@@ -44,6 +44,16 @@
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
       <string>Cross section</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tab_5">
+     <attribute name="title">
+      <string>I(H)</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tab_6">
+     <attribute name="title">
+      <string>ks(H)</string>
      </attribute>
     </widget>
    </widget>
@@ -88,6 +98,11 @@
   <action name="actionQuit">
    <property name="text">
     <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="action_at_H">
+   <property name="text">
+    <string>at H</string>
    </property>
   </action>
  </widget>

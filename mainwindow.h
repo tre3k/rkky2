@@ -12,7 +12,7 @@
 
 #include "rkkyfunction.h"
 
-#define T_N 257
+#define T_N 300
 #define T_FROM -0.3
 #define T_TO 0.3
 
@@ -33,6 +33,8 @@ private slots:
 
     void on_actionQuit_triggered();
 
+    void on_action_at_H_triggered();
+
 private:
     Ui::MainWindow *ui;
 
@@ -40,6 +42,11 @@ private:
     tPlot *plotSphere;
     tPlot2DCase *plotIntencity;
     tPlot *plotCrossSection;
+    tPlot *plotIatH;
+    tPlot *plotKatH;
+
+    /* for cross-section */
+    QVector<double> vRy,vLy,vRx,vLx,vAx,vAy;
 
     void buildDispersion(rkkyFunction *rf);
     void buildSphere(rkkyFunction *rf);
@@ -70,6 +77,14 @@ private:
         QFormLayout *layout;
         QComboBox *comboBox;
     } dispersionWidget;
+
+    struct retKI{
+        double Ks;
+        double I;
+        double Theta_C;
+    };
+
+    retKI findMax(QVector<double> *vx, QVector<double> *vy);
 
 };
 
